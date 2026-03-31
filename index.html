@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Password Manager Vault</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="bg-light vh-100 d-flex">
+
+    <div class="container-fluid p-0 d-flex">
+
+        <aside class="sidebar bg-primary-custom text-white p-3 d-flex flex-column hide">
+            <h4 class="text-center mb-4 mt-2 fw-bold"><i class="fa-solid fa-shield-halved me-2"></i>Vault</h4>
+            <ul id="menuTabs" class="nav flex-column mb-auto">
+                <li class="nav-item">
+                    <a data-page="passwordPage" class="nav-link text-white active-nav"><i
+                            class="fa-solid fa-key me-2"></i>
+                        <span>Passwords</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a data-page="settingsPage" class="nav-link text-white opacity-75"><i
+                            class="fa-solid fa-gear me-2"></i>
+                        <span>Settings</span>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <main class="flex-grow-1 flex-grow-1 overflow-auto">
+
+            <header class="navbar bg-white border-bottom px-4 py-3 shadow-sm flex-shrink-0">
+                <button id="toggleSidebar" class="btn btn-light me-3">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <div class="input-group w-50">
+                    <span class="input-group-text bg-light border-end-0"><i
+                            class="fa-solid fa-magnifying-glass text-muted"></i></span>
+                    <input type="text" class="form-control border-start-0 bg-light" placeholder="Search passwords...">
+                </div>
+                <div class="dropdown">
+                    <button class="btn btn-light rounded-circle p-2" type="button" data-bs-toggle="dropdown">
+                        <i class="fa-solid fa-user"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="#" onclick="openProfile()">Profile</a></li>
+                        <li><a class="dropdown-item text-danger" href="/auth.html">Logout</a></li>
+                    </ul>
+                </div>
+
+            </header>
+
+            <div id="passwordPage">
+                <div class="p-4 overflow-auto flex-grow-1">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2 class="h4 mb-0 fw-bold" style="color: var(--primary-blue);">Dashboard & Vault</h2>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-primary-custom" data-bs-toggle="modal"
+                                data-bs-target="#passwordModal">
+                                <i class="fa-solid fa-plus me-1"></i> Add New
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-12 col-md-4">
+                            <div class="card stat-card border-0 shadow-sm rounded-3 bg-primary-custom text-white h-100">
+                                <div class="card-body d-flex justify-content-between align-items-center p-4">
+                                    <div>
+                                        <h6 class="text-white-50 mb-1 fw-semibold">Tổng số mật khẩu</h6>
+                                        <h2 class="mb-0 fw-bold">128</h2>
+                                    </div>
+                                    <i class="fa-solid fa-key fs-1 opacity-50"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <div class="card stat-card border-0 shadow-sm rounded-3 bg-success text-white h-100">
+                                <div class="card-body d-flex justify-content-between align-items-center p-4">
+                                    <div>
+                                        <h6 class="text-white-50 mb-1 fw-semibold">Bảo mật an toàn</h6>
+                                        <h2 class="mb-0 fw-bold">120</h2>
+                                    </div>
+                                    <i class="fa-solid fa-shield fs-1 opacity-50"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <div class="card stat-card border-0 shadow-sm rounded-3 bg-danger text-white h-100">
+                                <div class="card-body d-flex justify-content-between align-items-center p-4">
+                                    <div>
+                                        <h6 class="text-white-50 mb-1 fw-semibold">Cảnh báo rủi ro</h6>
+                                        <h2 class="mb-0 fw-bold">8</h2>
+                                    </div>
+                                    <i class="fa-solid fa-triangle-exclamation fs-1 opacity-50"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card shadow-sm border-0 rounded-3">
+                        <div
+                            class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0 fw-bold text-muted"><i class="fa-solid fa-list me-2"></i>My Passwords</h5>
+                        </div>
+                        <div class="card-body p-0 table-responsive">
+                            <table class="table table-hover mb-0 align-middle">
+                                <thead class="table-light text-muted">
+                                    <tr>
+                                        <th class="ps-4">Service</th>
+                                        <th>Username</th>
+                                        <th>Password</th>
+                                        <th class="text-end pe-4">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="passwordList">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="settingsPage" style="display: none;">
+                <div class="row g-4 justify-content-center">
+                    <div class="col-12 col-xl-8">
+                        <h2 class="h4 mb-4 fw-bold" style="color: var(--primary-blue);">Hệ thống & Bảo mật</h2>
+
+                        <div class="card border-0 shadow-sm rounded-3 mb-4">
+                            <div class="card-header bg-white py-3">
+                                <h6 class="mb-0 fw-bold"><i class="fa-solid fa-lock me-2 text-primary"></i>Bảo mật
+                                    tài khoản
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-4">
+                                    <label class="form-label fw-semibold text-muted small">Master Password</label>
+                                    <div
+                                        class="d-flex align-items-center justify-content-between p-3 bg-light rounded-3 border">
+                                        <div>
+                                            <p class="mb-0 fw-bold">••••••••••••</p>
+                                            <small class="text-muted">Thay đổi định kỳ để tăng tính bảo mật</small>
+                                        </div>
+                                        <button class="btn btn-sm btn-outline-primary rounded-pill px-3">Thay
+                                            đổi</button>
+                                    </div>
+                                </div>
+                                <div
+                                    class="form-check form-switch p-0 d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <label class="form-check-label fw-bold" for="2faSwitch">Xác thực 2 lớp
+                                            (2FA)</label>
+                                        <p class="text-muted small mb-0">Yêu cầu mã xác nhận từ Email khi đăng nhập
+                                            máy lạ.</p>
+                                    </div>
+                                    <input class="form-check-input ms-0" type="checkbox" id="2faSwitch" checked
+                                        style="width: 3em; height: 1.5em;">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card border-0 shadow-sm rounded-3 mb-4">
+                            <div class="card-header bg-white py-3">
+                                <h6 class="mb-0 fw-bold"><i class="fa-solid fa-sliders me-2 text-primary"></i>Tùy
+                                    chỉnh ứng dụng
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold text-muted small">Thời gian tự động
+                                            khóa</label>
+                                        <select class="form-select border-light-subtle bg-light">
+                                            <option value="5">Sau 5 phút</option>
+                                            <option value="15" selected>Sau 15 phút</option>
+                                            <option value="30">Sau 30 phút</option>
+                                            <option value="0">Không bao giờ</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold text-muted small">Ngôn ngữ hiển
+                                            thị</label>
+                                        <select class="form-select border-light-subtle bg-light">
+                                            <option value="vi">Tiếng Việt</option>
+                                            <option value="en">English</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card border-0 shadow-sm rounded-3 border-start border-danger border-4">
+                            <div class="card-header bg-white py-3">
+                                <h6 class="mb-0 fw-bold text-danger"><i class="fa-solid fa-database me-2"></i>Quản
+                                    lý dữ liệu
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex flex-wrap gap-2">
+                                    <button class="btn btn-light border text-muted px-4 rounded-3">
+                                        <i class="fa-solid fa-file-export me-2"></i>Xuất dữ liệu (JSON)
+                                    </button>
+                                    <button class="btn btn-light border text-muted px-4 rounded-3">
+                                        <i class="fa-solid fa-file-import me-2"></i>Nhập dữ liệu
+                                    </button>
+                                    <button class="btn btn-outline-danger px-4 rounded-3 ms-md-auto">
+                                        <i class="fa-solid fa-trash-can me-2"></i>Xóa toàn bộ kho mật khẩu
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+        </main>
+    </div>
+
+    <div class="modal fade" id="passwordModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-primary-custom text-white border-0">
+                    <h5 class="modal-title" id="modalTitle">Add New Password</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form id="passwordForm" class="needs-validation" novalidate>
+                        <input type="hidden" id="editId">
+                        <div class="mb-3">
+                            <label class="form-label text-muted fw-semibold">Service Name</label>
+                            <input type="text" class="form-control" id="serviceName" placeholder="e.g. Google" required>
+                            <div class="invalid-feedback">Vui lòng nhập tên dịch vụ.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-muted fw-semibold">Username / Email</label>
+                            <input type="text" class="form-control" id="userName" required>
+                            <div class="invalid-feedback">Vui lòng nhập username.</div>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label text-muted fw-semibold">Password</label>
+                            <div class="input-group">
+                                <input type="password" class="form-control" id="passWord" required>
+                                <button class="btn btn-outline-secondary" type="button" id="toggleModalPass">
+                                    <i class="fa-regular fa-eye"></i>
+                                </button>
+                                <div class="invalid-feedback">Vui lòng nhập mật khẩu.</div>
+                            </div>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary-custom py-2">Save Password</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="profileOverlay" class="overlay d-none">
+        <div class="profile-card-wrapper">
+            <div class="container py-5">
+                <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                    <div class="row g-0">
+                        <div class="col-md-4 bg-light border-end p-3 p-md-5 text-center">
+                            <div class="position-relative d-inline-block mb-4">
+                                <img src="https://placehold.co/150"
+                                    class="rounded-circle img-thumbnail shadow-sm"
+                                    style="width: 150px; height: 150px; object-fit: cover;">
+                                <button
+                                    class="btn btn-primary btn-sm position-absolute bottom-0 end-0 rounded-circle shadow">
+                                    <i class="fa-solid fa-camera"></i>
+                                </button>
+                            </div>
+                            <h4 class="fw-bold mb-1">miniminZ</h4>
+                            <p class="text-muted small mb-3">Software Engineering | PTIT</p>
+                            <div
+                                class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-2">
+                                <i class="fa-solid fa-shield-check me-1"></i> Account Secured
+                            </div>
+                        </div>
+
+                        <div class="col-md-8 p-3 p-md-5 bg-white">
+                            <h5 class="fw-bold mb-4 text-primary">
+                                <i class="fa-solid fa-user-gear me-2"></i>Thông tin cá nhân
+                            </h5>
+
+                            <form class="row g-4" id="profileForm">
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input type="text" class="form-control border-light-subtle bg-light shadow-none"
+                                            id="f_name" value="Nguyễn Văn A" placeholder="Name">
+                                        <label for="f_name">Họ và tên</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input type="text" class="form-control border-light-subtle bg-light shadow-none"
+                                            id="f_user" value="miniminZ" placeholder="Username">
+                                        <label for="f_user">Username</label>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-floating">
+                                        <input type="email"
+                                            class="form-control border-light-subtle bg-light shadow-none" id="f_email"
+                                            value="contact@example.com" placeholder="Email">
+                                        <label for="f_email">Địa chỉ Email</label>
+                                    </div>
+                                </div>
+
+                                <div class="col-12 text-end mt-5">
+                                    <button type="button" class="btn btn-outline-secondary px-4 border-0"
+                                        onclick="closeProfile()">Hủy</button>
+
+                                    <button type="submit" class="btn btn-primary px-5 py-2 shadow fw-bold">
+                                        Lưu thay đổi
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="script.js">
+    </script>
+</body>
+
+</html>
