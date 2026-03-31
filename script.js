@@ -29,7 +29,6 @@ document.addEventListener("DOMContentLoaded", () => {
     sidebar.classList.toggle("hide");
   });
 
-
   // Định nghĩa hàm toggle password còn thiếu để tránh lỗi Console
   window.toggleEditPassword = function (btn) {
     const input = btn.parentElement.querySelector("input");
@@ -91,7 +90,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (profileDisplayUser) profileDisplayUser.textContent = `@${username}`;
 
       // Hiển thị thông báo (Toast hoặc Alert)
-      alert("Thông tin cá nhân đã được cập nhật thành công!"); // Bạn nên dùng Toast đẹp hơn
+      showToast("Cập nhật thông tin thành công!", "success");
 
       // Đóng overlay
       closeProfile();
@@ -153,7 +152,7 @@ document.addEventListener("DOMContentLoaded", () => {
   window.copyPwd = (index) => {
     const raw = document.getElementById(`raw-${index}`).value;
     navigator.clipboard.writeText(raw).then(() => {
-      alert("Password copied to clipboard!"); // Trong thực tế nên dùng Toast message
+      showToast("Đã copy mật khẩu!", "info");
     });
   };
 
@@ -300,13 +299,16 @@ document.addEventListener("DOMContentLoaded", () => {
     localStorage.setItem("vaults", JSON.stringify(vaults));
 
     renderVault();
+    showToast("Cập nhật thành công!", "success");
   };
   // Hàm Delete
   window.deletePwd = (index) => {
-    if (confirm("Are you sure you want to delete this password?")) {
+    if (confirm("Xóa mật khẩu này?")) {
       vaults.splice(index, 1);
       localStorage.setItem("vaults", JSON.stringify(vaults));
       renderVault();
+
+      showToast("Đã xóa mật khẩu!", "warning");
     }
   };
 
@@ -326,4 +328,41 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
   renderVault(); // Render lần đầu
+  showToast("Đã lưu mật khẩu!", "success");
+  // ===== TOAST FUNCTION =====
+  function showToast(message, type = "success") {
+    let container = document.querySelector(".toast-container");
+
+    if (!container) {
+      container = document.createElement("div");
+      container.className = "toast-container position-fixed top-0 end-0 p-3";
+      document.body.appendChild(container);
+    }
+
+    const icons = {
+      success: "fa-check-circle",
+      danger: "fa-circle-xmark",
+      warning: "fa-triangle-exclamation",
+      info: "fa-circle-info",
+    };
+
+    const toast = document.createElement("div");
+    toast.className = `toast text-bg-${type} show mb-2`;
+
+    toast.innerHTML = `
+    <div class="toast-header">
+      <i class="fa-solid ${icons[type]} me-2"></i>
+      <strong class="me-auto">Thông báo</strong>
+      <small>Now</small>
+      <button class="btn-close" data-bs-dismiss="toast"></button>
+    </div>
+    <div class="toast-body">
+      ${message}
+    </div>
+  `;
+
+    container.appendChild(toast);
+
+    setTimeout(() => toast.remove(), 2500);
+  }
 });
