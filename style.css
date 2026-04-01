@@ -1,4 +1,4 @@
-/* Custom variables */
+
 :root {
     --primary-blue: #355872;
     --primary-hover: #2a465b;
@@ -14,7 +14,7 @@ body {
     width: 260px;
     background-color: var(--primary-blue);
     transition: all 0.3s ease;
-}
+}   
 .sidebar {
     transition: 0.3s;
 }
@@ -200,4 +200,37 @@ body {
 .text-primary {
     --bs-text-opacity: 1;
     color: var(--primary-blue) !important;
+}
+.setting-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+}
+
+.setting-item:not(:last-child) {
+  border-bottom: 1px solid #f1f1f1;
+}
+
+.hover-card {
+  transition: all 0.2s ease;
+}
+
+.hover-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+}
+.search-box input {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    transition: all 0.2s ease;
+}
+
+.search-box input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(53, 88, 114, 0.15);
+}
+
+.search-box i {
+    pointer-events: none;
 }
