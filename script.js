@@ -2,9 +2,7 @@
 import { Components } from "./component.js";
 
 document.addEventListener("DOMContentLoaded", () => {
-  // ==========================================
   // 1. KHỞI TẠO BIẾN & CẤU HÌNH
-  // ==========================================
   const passwordForm = document.getElementById("passwordForm");
   const passwordList = document.getElementById("passwordList");
   const modalElement = document.getElementById("passwordModal");
@@ -12,13 +10,17 @@ document.addEventListener("DOMContentLoaded", () => {
   const changeModal = new bootstrap.Modal(
     document.getElementById("changePasswordModal"),
   );
+  const deleteModal = new bootstrap.Modal(
+    document.getElementById("confirmDeleteModal"),
+  );
+  const profileModal = new bootstrap.Modal(
+    document.getElementById("profileModal"),
+  );
   const html = document.documentElement;
 
   let vaults = JSON.parse(localStorage.getItem("vaults")) || [];
 
-  // ==========================================
   // 2. TIỆN ÍCH (UTILITIES)
-  // ==========================================
   const getDomainName = (url) => {
     try {
       const domain = url
@@ -30,7 +32,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   };
 
-  const showToast = (message, type = "success") => {
+  const showToast = (message, type = "success", action = null) => {
     let container =
       document.querySelector(".toast-container") ||
       (() => {
@@ -40,29 +42,45 @@ document.addEventListener("DOMContentLoaded", () => {
         return c;
       })();
 
-    const icons = {
-      success: "fa-check-circle",
-      danger: "fa-circle-xmark",
-      warning: "fa-triangle-exclamation",
-      info: "fa-circle-info",
-    };
     const toast = document.createElement("div");
     toast.className = `toast text-bg-${type} show mb-2`;
     toast.innerHTML = `
-      <div class="toast-header">
-        <i class="fa-solid ${icons[type]} me-2"></i>
-        <strong class="me-auto">Thông báo</strong>
-        <button class="btn-close" data-bs-dismiss="toast"></button>
+    <div class="d-flex align-items-center justify-content-between p-2">
+      <div class="d-flex align-items-center gap-2">
+        <span>${message}</span>
       </div>
-      <div class="toast-body">${message}</div>`;
+      <div class="d-flex align-items-center gap-2">
+        ${
+          action
+            ? `<button class="btn btn-sm btn-light">${action.text}</button>`
+            : ""
+        }
+        <button class="btn-close btn-close-white"></button>
+      </div>
+    </div>
+  `;
 
     container.appendChild(toast);
-    setTimeout(() => toast.remove(), 2500);
-  };
 
-  // ==========================================
+    // undo
+    if (action) {
+      toast.querySelector(".btn-light").onclick = () => {
+        action.onClick();
+        toast.remove();
+      };
+    }
+
+    // nút X
+    toast.querySelector(".btn-close").onclick = () => {
+      toast.remove();
+    };
+
+    // auto hide
+    setTimeout(() => {
+      toast.remove();
+    }, 2500);
+  };
   // 3. ĐIỀU HƯỚNG & PROFILE
-  // ==========================================
   const links = document.querySelectorAll("#menuTabs a");
   links.forEach((link) => {
     link.addEventListener("click", (e) => {
@@ -75,59 +93,50 @@ document.addEventListener("DOMContentLoaded", () => {
       document.getElementById(link.dataset.page).style.display = "block";
     });
   });
+  const loadProfile = () => {
+    const saved = JSON.parse(localStorage.getItem("userProfile"));
+    if (!saved) return;
 
-  const profileForm = document.getElementById("profileForm");
-  const profileDisplayName = document.querySelector(
-    "#profileOverlay .col-md-4 h4",
-  );
-  const profileDisplayUser = document.querySelector(
-    "#profileOverlay .col-md-4 p.text-muted",
-  );
-  const savedProfile = JSON.parse(localStorage.getItem("userProfile"));
+    // input
+    document.getElementById("f_name").value = saved.name;
+    document.getElementById("f_user").value = saved.username;
+    document.getElementById("f_email").value = saved.email;
+    document.getElementById("f_bio").value = saved.bio || "";
+    document.getElementById("profileBio").innerText = saved.bio || "";
 
-  if (savedProfile) {
-    document.getElementById("f_name").value = savedProfile.name;
-    document.getElementById("f_user").value = savedProfile.username;
-    document.getElementById("f_email").value = savedProfile.email;
-    if (profileDisplayName) profileDisplayName.textContent = savedProfile.name;
-    if (profileDisplayUser)
-      profileDisplayUser.textContent = `@${savedProfile.username}`;
-  }
+    // hiển thị bên trái modal
+    document.getElementById("profileName").innerText = saved.name;
 
-  window.openProfile = () =>
-    document.getElementById("profileOverlay")?.classList.remove("d-none");
-  window.closeProfile = () =>
-    document.getElementById("profileOverlay")?.classList.add("d-none");
+    const profileUser = document.getElementById("profileUser");
+    if (profileUser) profileUser.innerText = `@${saved.username}`;
+  };
+  window.openProfile = () => {
+    loadProfile();
+    profileModal.show();
+  };
 
-  profileForm?.addEventListener("submit", (e) => {
+  document.getElementById("profileForm").addEventListener("submit", (e) => {
     e.preventDefault();
     const data = {
       name: document.getElementById("f_name").value,
       username: document.getElementById("f_user").value,
       email: document.getElementById("f_email").value,
+      bio: document.getElementById("f_bio").value,
     };
     localStorage.setItem("userProfile", JSON.stringify(data));
-    if (profileDisplayName) profileDisplayName.textContent = data.name;
-    if (profileDisplayUser)
-      profileDisplayUser.textContent = `@${data.username}`;
+    loadProfile();
     showToast("Cập nhật thông tin thành công!", "success");
-    closeProfile();
   });
-
-  // ==========================================
-  // 4. QUẢN LÝ MẬT KHẨU (SỬ DỤNG COMPONENTS)
-  // ==========================================
+  // 4. QUẢN LÝ MẬT KHẨU
   const renderVault = () => {
     passwordList.innerHTML = "";
     if (vaults.length === 0) {
-      // SỬ DỤNG COMPONENT: emptyState
+      // emptyState
       passwordList.innerHTML = Components.emptyState();
       return;
     }
 
     vaults.forEach((item, index) => {
-      // SỬ DỤNG COMPONENT: passwordRow
-      // Tạo một template tạm để chuyển string thành Node nếu cần, hoặc cộng dồn chuỗi
       passwordList.insertAdjacentHTML(
         "beforeend",
         Components.passwordRow(item, index, getDomainName),
@@ -148,23 +157,24 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   window.deletePwd = (i) => {
-    if (confirm("Xóa mục này?")) {
-      vaults.splice(i, 1);
-      saveAndRender();
-      showToast("Đã xóa!", "warning");
-    }
+    const deleted = vaults[i];
+
+    vaults.splice(i, 1);
+    saveAndRender();
+
+    showToast("Đã xóa!", "warning", {
+      text: "Undo",
+      onClick: () => {
+        vaults.splice(i, 0, deleted);
+        saveAndRender();
+      },
+    });
   };
   const updateStats = () => {
-    // 1. Tính toán logic
     const total = vaults.length;
-
-    // An toàn: Mật khẩu từ 8 ký tự trở lên
     const safe = vaults.filter((item) => item.password.length >= 8).length;
+    const risk = vaults.filter((item) => item.password.length < 8).length;
 
-    // Rủi ro: Mật khẩu dưới 6 ký tự
-    const risk = vaults.filter((item) => item.password.length < 6).length;
-
-    // 2. Hiển thị ra màn hình
     const totalElem = document.getElementById("stat-total");
     const safeElem = document.getElementById("stat-safe");
     const riskElem = document.getElementById("stat-risk");
@@ -173,52 +183,39 @@ document.addEventListener("DOMContentLoaded", () => {
     if (safeElem) safeElem.innerText = safe;
     if (riskElem) riskElem.innerText = risk;
   };
-  // Hàm lọc mật khẩu yếu
   window.filterWeakPasswords = () => {
-    // 1. Lọc ra các mật khẩu yếu (dưới 6 ký tự)
-    const weakVaults = vaults.filter((item) => item.password.length < 6);
+    const weakVaults = vaults.filter((item) => item.password.length < 8);
 
-    // 2. Xóa danh sách cũ
     passwordList.innerHTML = "";
 
-    // 3. Nếu không có mật khẩu yếu nào
     if (weakVaults.length === 0) {
       passwordList.innerHTML = Components.emptyState();
       showToast("Không có mật khẩu nào yếu!", "success");
       return;
     }
 
-    // 4. Render riêng danh sách mật khẩu yếu
     weakVaults.forEach((item, index) => {
-      // Tìm lại index gốc trong mảng vaults để các nút Sửa/Xóa vẫn chạy đúng
+      // tìm lại index gốc trong vaults, tránh xung đột
       const originalIndex = vaults.findIndex((v) => v === item);
       passwordList.insertAdjacentHTML(
         "beforeend",
         Components.passwordRow(item, originalIndex, getDomainName),
       );
     });
-
-    // 5. Thêm một nút "Quay lại" hoặc thông báo đang lọc
     showToast(`Đang hiển thị ${weakVaults.length} mật khẩu yếu`, "warning");
   };
-  // Hàm lọc mật khẩu an toàn (Độ dài >= 8)
+
   window.filterSafePasswords = () => {
-    // 1. Lọc ra các mật khẩu thỏa mãn điều kiện an toàn
     const safeVaults = vaults.filter((item) => item.password.length >= 8);
 
-    // 2. Làm trống danh sách hiện tại
     passwordList.innerHTML = "";
 
-    // 3. Xử lý trường hợp không có mật khẩu nào đạt chuẩn
     if (safeVaults.length === 0) {
       passwordList.innerHTML = Components.emptyState();
       showToast("Chưa có mật khẩu nào đạt chuẩn an toàn!", "info");
       return;
     }
-
-    // 4. Render danh sách đã lọc
     safeVaults.forEach((item) => {
-      // Tìm index gốc để các chức năng Sửa/Xóa vẫn hoạt động chính xác trên mảng vaults
       const originalIndex = vaults.findIndex((v) => v === item);
       passwordList.insertAdjacentHTML(
         "beforeend",
@@ -243,8 +240,6 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
     document.querySelectorAll(".edit-row").forEach((e) => e.remove());
-
-    // SỬ DỤNG COMPONENT: editRow
     currentRow.insertAdjacentHTML("afterend", Components.editRow(item, index));
   };
 
@@ -257,8 +252,7 @@ document.addEventListener("DOMContentLoaded", () => {
     saveAndRender();
     showToast("Cập nhật thành công!", "success");
   };
-
-  // Các hàm bổ trợ cho giao diện Edit
+  // Hàm ẩn hiện mật khẩu
   window.toggleEditPassword = (btn) => {
     const input = btn.parentElement.querySelector("input");
     const icon = btn.querySelector("i");
@@ -271,9 +265,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   };
 
-  // ==========================================
-  // 5. CÁC LOGIC CÒN LẠI (GIỮ NGUYÊN)
-  // ==========================================
+  // 5. CÁC LOGIC
   passwordForm.addEventListener("submit", (e) => {
     e.preventDefault();
     if (!passwordForm.checkValidity()) {
@@ -292,26 +284,78 @@ document.addEventListener("DOMContentLoaded", () => {
     bootstrapModal.hide();
   });
 
-  document.getElementById("changeMasterBtn").onclick = () => changeModal.show();
+  let changePasswordMode = "master";
+  window.openChangePasswordModal = () => {
+    changePasswordMode = "account";
+
+    document.querySelector("#changePasswordModal .modal-title").innerText =
+      "Đổi mật khẩu tài khoản";
+    const profileModalEl = document.getElementById("profileModal");
+    const profileModal = bootstrap.Modal.getInstance(profileModalEl);
+
+    profileModalEl.addEventListener(
+      "hidden.bs.modal",
+      () => {
+        changeModal.show();
+      },
+      { once: true },
+    );
+
+    profileModal.hide();
+  };
+  document.getElementById("changeMasterBtn").onclick = () => {
+    changePasswordMode = "master";
+
+    document.querySelector("#changePasswordModal .modal-title").innerText =
+      "Đổi Master Password";
+
+    changeModal.show();
+  };
   document.getElementById("saveMasterPass").onclick = () => {
     const current = document.getElementById("currentPass").value;
     const newPass = document.getElementById("newPass").value;
     const confirmPass = document.getElementById("confirmPass").value;
-    const savedPass = localStorage.getItem("masterPassword") || "123456";
-
-    if (current !== savedPass) {
-      showToast("Mật khẩu hiện tại không đúng!", "danger");
-      return;
-    }
+    // if (newPass.length < 6) {
+    //   showToast("Mật khẩu phải >= 6 ký tự!", "warning");
+    //   return;
+    // }
     if (newPass !== confirmPass) {
       showToast("Xác nhận mật khẩu không khớp!", "warning");
       return;
     }
 
-    localStorage.setItem("masterPassword", newPass);
-    showToast("Đổi mật khẩu thành công!", "success");
+    if (changePasswordMode === "master") {
+      const savedPass = localStorage.getItem("masterPassword") || "123456";
+
+      if (current !== savedPass) {
+        showToast("Sai master password!", "danger");
+        return;
+      }
+
+      localStorage.setItem("masterPassword", newPass);
+      showToast("Đổi master password thành công!", "success");
+    } else if (changePasswordMode === "account") {
+      const savedAccountPass =
+        localStorage.getItem("accountPassword") || "123456";
+
+      if (current !== savedAccountPass) {
+        showToast("Sai mật khẩu tài khoản!", "danger");
+        return;
+      }
+
+      localStorage.setItem("accountPassword", newPass);
+      showToast("Đổi mật khẩu tài khoản thành công!", "success");
+    }
+
     changeModal.hide();
   };
+  document
+    .getElementById("changePasswordModal")
+    .addEventListener("hidden.bs.modal", () => {
+      document.getElementById("currentPass").value = "";
+      document.getElementById("newPass").value = "";
+      document.getElementById("confirmPass").value = "";
+    });
 
   document.getElementById("exportBtn").addEventListener("click", () => {
     const data = localStorage.getItem("vaults");
@@ -335,7 +379,38 @@ document.addEventListener("DOMContentLoaded", () => {
     };
     reader.readAsText(e.target.files[0]);
   };
+  document.getElementById("btnDeleteAll").addEventListener("click", () => {
+    openDeleteModal();
+  });
+  window.openDeleteModal = () => {
+    const input = document.getElementById("confirmInput");
+    input.value = "";
+    deleteModal.show();
+    setTimeout(() => input.focus(), 300);
+  };
 
+  document.getElementById("confirmDeleteBtn").onclick = () => {
+    const input = document.getElementById("confirmInput").value;
+    const savedPass = localStorage.getItem("masterPassword") || "123456";
+
+    if (input !== savedPass) {
+      showToast("Sai master password!", "danger");
+
+      const inputBox = document.getElementById("confirmInput");
+      inputBox.classList.add("is-invalid");
+      setTimeout(() => inputBox.classList.remove("is-invalid"), 500);
+      return;
+    }
+
+    localStorage.removeItem("vaults");
+    vaults = [];
+
+    passwordList.innerHTML = Components.emptyState();
+    updateStats();
+
+    deleteModal.hide();
+    showToast("Đã xóa toàn bộ dữ liệu!", "danger");
+  };
   const btnDarkMode = document.getElementById("btnDarkMode");
   const applyTheme = (theme) => {
     html.setAttribute("data-bs-theme", theme);

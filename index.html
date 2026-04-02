@@ -5,32 +5,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Password Manager Vault</title>
-    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Custom CSS -->
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body class="bg-light vh-100 d-flex">
-
-    <!-- ======================================================
-       LAYOUT CHÍNH: Sidebar + Main (dùng d-flex của Bootstrap)
-  ====================================================== -->
     <div class="container-fluid p-0 d-flex">
-
-        <!-- ====================================================
-         SIDEBAR – dùng Offcanvas của Bootstrap trên mobile
-    ==================================================== -->
         <aside class="offcanvas-lg offcanvas-start sidebar bg-primary-custom text-white p-3 d-flex flex-column"
             id="sidebar" tabindex="-1">
-            <!-- Logo – chỉ hiện trên màn hình lg trở lên -->
             <h4 class="text-center mb-4 mt-2 fw-bold d-none d-lg-block">
                 <i class="fa-solid fa-shield-halved me-2"></i> JJin
             </h4>
-
-            <!-- Header của Offcanvas – chỉ hiện trên mobile (d-lg-none) -->
             <div class="offcanvas-header d-lg-none">
                 <h5 class="mb-0 fw-bold">
                     <i class="fa-solid fa-shield-halved me-2"></i>JJin
@@ -53,9 +39,7 @@
             </ul>
         </aside>
 
-        <!-- ====================================================
-         NỘI DUNG CHÍNH
-    ==================================================== -->
+        <!-- main -->
         <main class="flex-grow-1 overflow-auto">
 
             <!-- HEADER / NAVBAR -->
@@ -84,15 +68,13 @@
                 </div>
             </header>
 
-            <!-- ================================================
-           TRANG PASSWORDS (mặc định hiển thị)
-      ================================================ -->
+            <!-- Trang passwords (mặc định) -->
             <div id="passwordPage">
                 <div class="p-4">
 
                     <!-- Tiêu đề + nút Add New -->
                     <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h2 class="h4 mb-0 fw-bold" style="color: var(--primary-blue);"> Trang chủ</h2>
+                        <h2 class="h4 mb-0 fw-bold"> Trang chủ</h2>
                         <button class="btn btn-primary-custom" data-bs-toggle="modal" data-bs-target="#passwordModal">
                             <i class="fa-solid fa-plus me-1"></i> Thêm mật khẩu mới
                         </button>
@@ -171,9 +153,7 @@
                 </div>
             </div>
 
-            <!-- ================================================
-           TRANG SETTINGS (ẩn mặc định)
-      ================================================ -->
+            <!-- Trang settings (ẩn mặc định) -->
             <div id="settingsPage" style="display: none;">
                 <div class="p-4">
                     <div class="row g-4 justify-content-center">
@@ -303,7 +283,9 @@
                                             <p class="mb-1 fw-semibold text-danger">Xóa toàn bộ dữ liệu</p>
                                             <small class="text-muted">Không thể hoàn tác</small>
                                         </div>
-                                        <button class="btn btn-danger rounded-pill px-3">Xóa</button>
+                                        <button class="btn btn-danger rounded-pill px-3" id="btnDeleteAll">
+                                            Xóa
+                                        </button>
                                     </div>
 
                                 </div>
@@ -317,9 +299,7 @@
         </main>
     </div>
 
-    <!-- ======================================================
-       MODAL: Thêm / Sửa mật khẩu
-  ====================================================== -->
+    <!-- MODAL: Thêm / Sửa mật khẩu -->
     <div class="modal fade" id="passwordModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow">
@@ -366,9 +346,7 @@
         </div>
     </div>
 
-    <!-- ======================================================
-       MODAL: Đổi Master Password
-  ====================================================== -->
+    <!-- MODAL: Đổi Password -->
     <div class="modal fade" id="changePasswordModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content rounded-4">
@@ -402,89 +380,138 @@
         </div>
     </div>
 
-    <!-- ======================================================
-       OVERLAY: Trang Profile (tùy chỉnh, không dùng Modal)
-  ====================================================== -->
-    <div id="profileOverlay" class="overlay d-none">
-        <div class="profile-card-wrapper">
-            <div class="container py-5">
-                <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+    <!-- MODAL: PROFILE  -->
+    <div class="modal fade" id="profileModal" tabindex="-1">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content border-0 rounded-4 overflow-hidden">
+
+                <!-- Header -->
+                <div class="modal-header border-0">
+                    <h5 class="modal-title fw-bold">
+                        <i class="fa-solid fa-user me-2"></i> Hồ sơ cá nhân
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <!-- Body -->
+                <div class="modal-body p-0">
                     <div class="row g-0">
 
-                        <!-- Cột trái: Avatar + tên -->
+                        <!-- Cột trái -->
                         <div class="col-md-4 bg-light border-end p-3 p-md-5 text-center">
                             <div class="position-relative d-inline-block mb-4">
                                 <img src="https://placehold.co/150" class="rounded-circle img-thumbnail shadow-sm"
                                     style="width: 150px; height: 150px; object-fit: cover;" alt="Avatar">
+
                                 <button
                                     class="btn btn-primary btn-sm position-absolute bottom-0 end-0 rounded-circle shadow">
                                     <i class="fa-solid fa-camera"></i>
                                 </button>
                             </div>
-                            <h4 class="fw-bold mb-1">miniminZ</h4>
-                            <p class="text-muted small mb-3">Công nghệ thông tin | PTIT</p>
+
+                            <h4 id="profileName" class="fw-bold mb-1">miniminZ</h4>
+                            <p id="profileUser" class="text-muted small mb-1"></p>
+                            <p id="profileBio" class="text-muted small mb-2">
+                                Công nghệ thông tin | PTIT
+                            </p>
+
                             <div
                                 class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-2">
                                 <i class="fa-solid fa-shield-check me-1"></i> Tài khoản được bảo mật
                             </div>
                         </div>
 
-                        <!-- Cột phải: Form thông tin -->
+                        <!-- Cột phải -->
                         <div class="col-md-8 p-3 p-md-5 bg-white">
-                            <h5 class="fw-bold mb-4 text-primary">
-                                <i class="fa-solid fa-user-gear me-2"></i>Thông tin cá nhân
-                            </h5>
-
                             <form class="row g-4" id="profileForm">
+
                                 <div class="col-md-6">
                                     <div class="form-floating">
-                                        <input type="text" class="form-control border-light-subtle bg-light shadow-none"
-                                            id="f_name" value="Nguyễn Văn A" placeholder="Name">
+                                        <input type="text" class="form-control bg-light" id="f_name" placeholder="Name">
                                         <label for="f_name">Họ và tên</label>
                                     </div>
                                 </div>
+
                                 <div class="col-md-6">
                                     <div class="form-floating">
-                                        <input type="text" class="form-control border-light-subtle bg-light shadow-none"
-                                            id="f_user" value="miniminZ" placeholder="Username">
+                                        <input type="text" class="form-control bg-light" id="f_user"
+                                            placeholder="Username">
                                         <label for="f_user">Username</label>
+                                    </div>
+                                </div>
+
+                                <div class="col-12">
+                                    <div class="form-floating">
+                                        <input type="email" class="form-control bg-light" id="f_email"
+                                            placeholder="Email">
+                                        <label for="f_email">Địa chỉ Email</label>
                                     </div>
                                 </div>
                                 <div class="col-12">
                                     <div class="form-floating">
-                                        <input type="email"
-                                            class="form-control border-light-subtle bg-light shadow-none" id="f_email"
-                                            value="contact@example.com" placeholder="Email">
-                                        <label for="f_email">Địa chỉ Email</label>
+                                        <input type="text" class="form-control bg-light" id="f_bio" placeholder="Bio">
+                                        <label for="f_bio">Mô tả (VD: Công nghệ thông tin | PTIT)</label>
                                     </div>
                                 </div>
 
-                                <div class="col-12 text-end mt-5">
-                                    <button type="button" class="btn btn-outline-secondary px-4 border-0"
-                                        onclick="closeProfile()">
+                                <div class="col-12 text-end mt-4">
+                                    <button class="btn btn-outline-danger" onclick="openChangePasswordModal()">
+                                        Đổi mật khẩu
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary px-4"
+                                        data-bs-dismiss="modal">
                                         Hủy
                                     </button>
+
                                     <button type="submit" class="btn btn-primary px-5 py-2 shadow fw-bold">
                                         Lưu thay đổi
                                     </button>
                                 </div>
+
                             </form>
                         </div>
 
                     </div>
                 </div>
+
             </div>
         </div>
     </div>
+    <!-- MODAL: xóa toàn bộ dữ liệu -->
+    <div class="modal fade" id="confirmDeleteModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-3">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">
+                        <i class="fa-solid fa-triangle-exclamation me-2"></i>
+                        Xác nhận xóa
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
 
-    <!-- Input ẩn để import file -->
+                <div class="modal-body">
+                    <p class="mb-2">Hành động này sẽ xóa toàn bộ dữ liệu.</p>
+                    <p class="fw-bold text-danger">Không thể hoàn tác!</p>
+
+                    <input type="password" id="confirmInput" class="form-control mt-3"
+                        placeholder="Nhập master password để xác nhận" />
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">
+                        Hủy
+                    </button>
+                    <button class="btn btn-danger" id="confirmDeleteBtn">
+                        Xóa tất cả
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Input import file -->
     <input type="file" id="importFile" hidden>
 
-    <!-- Bootstrap JS Bundle (bao gồm Popper.js) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Custom Scripts -->
-    <!-- <script src="component.js"></script>
-    <script src="data.js"></script> -->
     <script type="module" src="script.js"></script>
 
 </body>
