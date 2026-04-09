@@ -226,6 +226,7 @@ document.addEventListener("DOMContentLoaded", () => {
     showToast(`Đang hiển thị ${safeVaults.length} mật khẩu an toàn`, "success");
   };
   const saveAndRender = () => {
+    // chuyển vaults từ object -> string
     localStorage.setItem("vaults", JSON.stringify(vaults));
     renderVault();
     updateStats();
